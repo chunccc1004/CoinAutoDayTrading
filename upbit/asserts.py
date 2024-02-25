@@ -1,4 +1,4 @@
-# Private 데이터를 수신하기 위해서는 Websocket 연결 시 인증
+# 보유한 자산 리스트 확인
 def read_all_assets():
     import jwt
     import os
