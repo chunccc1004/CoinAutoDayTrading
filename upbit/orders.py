@@ -1,5 +1,5 @@
 # 마켓별 주문 가능 정보 확인
-def order(type: str, price: str, volume: str):
+def order(order_type: str, price: str, volume: str):
     import jwt
     import hashlib
     import os
@@ -11,17 +11,17 @@ def order(type: str, price: str, volume: str):
     secret_key = os.environ['UPBIT_OPEN_API_SECRET_KEY']
     server_url = os.environ['UPBIT_OPEN_API_SERVER_URL']
 
-    if type == "bid":  # 매수 -> price 필수
+    if order_type == "bid":  # 매수 -> price 필수
         params = {
             'market': 'KRW-BTC',
-            'side': type,
+            'side': order_type,
             'ord_type': 'limit',
             'price': price,
         }
     else:  # 매도 -> volume 필수
         params = {
             'market': 'KRW-BTC',
-            'side': type,
+            'side': order_type,
             'ord_type': 'limit',
             'volume ': volume,
         }
