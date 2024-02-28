@@ -1,7 +1,8 @@
 from selenium.webdriver.remote.webelement import WebElement
 
+from upbit import get_15m_candle_datas
 
-def find_trading_market():
+
     a = 1
 
 
@@ -71,3 +72,30 @@ def _collect_data(data_list: list, tbody: WebElement):
             data_list.append(td_datas)
             is_added = True
     return is_added, data_list
+
+
+# 현재 거래량이 몰려있는지 확인하는 코드
+# 조건
+# 1. 15분 봉으로 확인
+# 2. 현재 봉부터 이전의 봉 2개까지 확인
+# 3. 너무 작은 크기이면 어떻게 판단할 것인지 중요 -> 이전 가장 큰 값의 40%는 되는 값이어야 하는 것으로 하자
+# 4. 확인하는 봉의 크기가 이전 봉보다 2배 이상 큰 경우로 감
+def _is_big_volume(market: str) -> bool:
+    df = get_15m_candle_datas(market)
+    volume_data = df['candle_acc_trade_volume']
+    check_bar_cnt = 3
+
+    # 조건 3 확인
+    check_range_volume_data = volume_data.head(check_bar_cnt)
+    max_val = volume_data.max()
+    if any(check_range_volume_data >= max_val * 0.4):
+        # 조건 4 진입
+        for i in range(0, check_bar_cnt):
+            check_bar = volume_data[i]
+            pre_bar = volume_data[i + 1]
+
+            if check_bar >= pre_bar * 2:
+                return True
+            else:
+                continue
+    return False
