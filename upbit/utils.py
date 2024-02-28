@@ -86,8 +86,10 @@ def _collect_data(data_list: list, tbody: WebElement):
         td_datas = []
         for td in tr.find_elements(By.TAG_NAME, "td"):
             td_datas.append(td.get_attribute("innerText"))
-        if td_datas == [] or td_datas in data_list:
-            pass
+        if not td_datas:
+            continue
+        elif td_datas[2] in [x[2] for x in data_list]:
+            continue
         else:
             data_list.append(td_datas)
             is_added = True
