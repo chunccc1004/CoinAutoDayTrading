@@ -1,13 +1,31 @@
+import time
+
 from selenium.webdriver.remote.webelement import WebElement
 
 from upbit import get_15m_candle_datas
 
 
-    a = 1
+def find_trading_market() -> list:
+    market_list = _get_market_list()
+    trading_market_list = []
+    cnt_is_big = 0
+    cnt_not_big = 0
+
+    for market in market_list:
+        print(f"진행 중 ({cnt_is_big + cnt_not_big}/{len(market_list)})")
+        time.sleep(0.05)
+        if _is_big_volume(market['market']):
+            trading_market_list.append(market)
+            cnt_is_big += 1
+        else:
+            cnt_not_big += 1
+    print(f"만족 : {cnt_is_big}\n탈락 : {cnt_not_big}")
+
+    return trading_market_list
 
 
 # 거래 대금 순 마켓 load하는 함수
-def get_market_list():
+def _get_market_list() -> list:
     import time
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
@@ -34,21 +52,23 @@ def get_market_list():
     # tbody > tr > td
     data_list = []
     is_added, data_list = _collect_data(data_list, tbody)
+    print(f"확인할 마켓 수 : {len(data_list)}")
     # scroll div
     scroll_div = driver.find_element(By.XPATH, xpath_scroll_div)
 
     # 스크롤을 아래로 내리기 (가상 스크롤링)
     while is_added:  # 예시로 3번 스크롤링
         driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", scroll_div)
-        time.sleep(0.1)  # 스크롤 후 로딩을 위한 대기
+        time.sleep(0.2)  # 스크롤 후 로딩을 위한 대기
         is_added, data_list = _collect_data(data_list, tbody)
+        print(f"확인할 마켓 수 : {len(data_list)}")
 
     data_list = list(
         map(lambda x: {'market': _market_code_translation(x[2]), 'volume': float(x[5].replace('백만', '').replace(',', '')) * 1000000}, data_list))
-    for tmp in data_list:
-        print(tmp)
 
-    time.sleep(1000)
+    print("마켓 리스트 검색 완료")
+
+    return data_list
 
 
 # market code api에 맞게 수정하는 함수
