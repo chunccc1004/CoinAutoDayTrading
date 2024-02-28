@@ -29,4 +29,5 @@ def get_4h_candle_datas(market: str) -> DataFrame:
 
 def _get_candle_data(url: str) -> DataFrame:
     headers = {"accept": "application/json"}
-    return pd.read_json(StringIO(requests.get(url, headers=headers).text))
+    response = requests.get(url, headers=headers)
+    return pd.read_json(StringIO(response.text))
