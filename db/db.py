@@ -22,16 +22,10 @@ class Database:
         self.conn.commit()
 
     # 구매 후, 히스토리 남김
-    def bid_history_insert(self, coin, price, volume):
+    def history_insert(self, type, coin, price, volume):
         created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cursor.execute(''' INSERT INTO trades (created_at, type, coin, price, volume, status)
-                                VALUES (?, 'bid', ?, ?, ?, 'continue')''', (created_at, coin, price, volume))
-        self.conn.commit()
-
-    def ask_history_insert(self, coin, price, volume):
-        created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.cursor.execute(''' INSERT INTO trades (created_at, type, coin, price, volume, status)
-                                VALUES (?, 'ask', ?, ?, ?, 'continue')''', (created_at, coin, price, volume))
+                                VALUES (?, ?, ?, ?, ?, 'continue')''', (created_at, type, coin, price, volume))
         self.conn.commit()
 
     def trade_end_update(self, coin):
