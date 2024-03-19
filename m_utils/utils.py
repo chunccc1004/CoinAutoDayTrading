@@ -4,6 +4,7 @@ import time
 import pandas as pd
 from selenium.webdriver.remote.webelement import WebElement
 
+from db import Database
 from upbit import get_15m_candle_datas
 
 
@@ -40,25 +41,31 @@ def cal_amount(usdt_balance, cur_price):
 
 # 포지션 진입
 # 현재가(cur_price)와 롱 포지션 목표가(long_target), 숏 포지션 목표가(short_target)을 비교하여 포지션 진입을 시도하는 함수
-def enter_position(exchange, symbol, cur_price, long_target, short_target, amount, position):
+def enter_position(db: Database, exchange, symbol, cur_price, long_target, short_target, amount, position):
     if cur_price > long_target:  # 현재가 > long 목표가
         position['type'] = 'long'
         position['amount'] = amount
+        db.history_insert("long", symbol, str(cur_price), str(amount))
+        print("enter_position")
         # exchange.create_market_buy_order(symbol=symbol, amount=amount)
     elif cur_price < short_target:  # 현재가 < short 목표가
         position['type'] = 'short'
         position['amount'] = amount
+        db.history_insert("short", symbol, str(cur_price), str(amount))
+        print("enter_position")
         # exchange.create_market_sell_order(symbol=symbol, amount=amount)
 
 
 # 포지션 종료
 # 포지션 종료를 시도하는 exit_position 함수는 현재 포지션에 대한 정보를 담고 있는 딕셔너리 객체를 함수 인자로 전달 받은 후 반대 방향으로 매매하여 포지션을 종료
-def exit_position(exchange, symbol, position):
+def exit_position(db: Database, exchange, cur_price, symbol, position):
     amount = position['amount']
     if position['type'] == 'long':
+        db.history_insert("long", symbol, str(cur_price), str(amount))
         # exchange.create_market_sell_order(symbol=symbol, amount=amount)
         position['type'] = None
     elif position['type'] == 'short':
+        db.history_insert("short", symbol, str(cur_price), str(amount))
         # exchange.create_market_buy_order(symbol=symbol, amount=amount)
         position['type'] = None
 
