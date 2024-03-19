@@ -1,3 +1,4 @@
+import math
 import time
 
 import pandas as pd
@@ -26,6 +27,15 @@ def cal_target(exchange, symbol):
     long_target = today['open'] + (yesterday['high'] - yesterday['low']) * 0.5
     short_target = today['open'] - (yesterday['high'] - yesterday['low']) * 0.5
     return long_target, short_target
+
+
+# 수량 계산
+# 바이낸스에서 USDT 잔고를 조회한 후 잔고의 10%를 현재 비트코인의 가격으로 나눠서 포지션에 진입할 수량을 계산해주는 함수
+def cal_amount(usdt_balance, cur_price):
+    portion = 0.1
+    usdt_trade = usdt_balance * portion
+    amount = math.floor((usdt_trade * 1000000) / cur_price) / 1000000
+    return amount
 
 
 # upbit
