@@ -1,5 +1,6 @@
 import datetime
 import time
+from pytz import timezone
 
 import db
 import m_binance
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     }
 
     while True:
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(timezone('Asia/Seoul'))
         ticker = binance.fetch_ticker(symbol)
         cur_price = ticker['last']
         amount = m_utils.cal_amount(usdt, cur_price)
