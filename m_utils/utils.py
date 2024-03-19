@@ -5,6 +5,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from upbit import get_15m_candle_datas
 
 
+# upbit
+# 5분봉 3틱
 def find_trading_market() -> list:
     market_list = _get_market_list()
     trading_market_list = []
