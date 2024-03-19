@@ -56,5 +56,9 @@ class Database:
         average_cost = total_cost / total_volume
         return average_cost
 
+    def tmp_select_all(self):
+        self.cursor.execute("SELECT * FROM trades")
+        return self.cursor.fetchall()
+
     def close(self):
         self.conn.close()
