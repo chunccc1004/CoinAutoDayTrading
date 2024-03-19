@@ -3,20 +3,19 @@ import time
 import pandas as pd
 from selenium.webdriver.remote.webelement import WebElement
 
-import binance
 from upbit import get_15m_candle_datas
 
 
 # binance
 # 변동성 돌파 전략 도구
 # volatility breakout
-def cal_target(symbol):
-    binance_api = binance.Api()
-    btc = binance_api.binance.fetch_ohlcv(
+def cal_target(exchange, symbol):
+    btc = exchange.fetch_ohlcv(
         symbol=symbol,
         timeframe='1d',
         since=None,
-        limit=10)
+        limit=10
+    )
 
     df = pd.DataFrame(data=btc, columns=['datetime', 'open', 'high', 'low', 'close', 'volume'])
     df['datetime'] = pd.to_datetime(df['datetime'], unit='ms')
@@ -24,8 +23,9 @@ def cal_target(symbol):
 
     yesterday = df.iloc[-2]
     today = df.iloc[-1]
-    target = today['open'] + (yesterday['high'] - yesterday['low']) * 0.5
-    return target
+    long_target = today['open'] + (yesterday['high'] - yesterday['low']) * 0.5
+    short_target = today['open'] - (yesterday['high'] - yesterday['low']) * 0.5
+    return long_target, short_target
 
 
 # upbit
